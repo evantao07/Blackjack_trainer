@@ -43,7 +43,7 @@ def show_hand(name, hand, hide_first=False):
     else:
         print(name + ": " + " ".join(hand) + "  (total: " + str(hand_value(hand)) + ")")
 
-def main():
+def run_game():
     print("Evan's Game of BlackJacks")
     print("Type 'n' at the end of a round to quit.\n")
 
@@ -146,7 +146,7 @@ def main():
         if again == "n" or again == "no":
             break
 
-    print("\nThanks for playing!")
+    print("\nThanks for playing :)")
 
 if __name__ == "__main__":
-    main()
+    run_game()
