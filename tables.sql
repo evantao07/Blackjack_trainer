@@ -1,3 +1,4 @@
+-- Active: 1768541672863@@127.0.0.1@3306
 CREATE DATABASE IF NOT EXISTS blackjack;
 USE blackjack;
 
@@ -42,3 +43,5 @@ CREATE TABLE IF NOT EXISTS bj_decision_log (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (session_id) REFERENCES bj_session(session_id) ON DELETE CASCADE
 );
+
+SHOW tables;

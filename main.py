@@ -4,13 +4,11 @@
 
 import random
 
-# ---------- CHANGE THESE ----------
 DB_HOST = "localhost"
 DB_USER = "root"
 DB_PASS = "Huk87$Km7@!89"
 DB_NAME = "blackjack"
-CHART_NAME = "Hit/Stand Basic (no doubles)"
-# ---------------------------------
+CHART_NAME = "Hit/Stand"
 
 ranks = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
 suits = ["♠","♥","♦","♣"]
@@ -121,7 +119,7 @@ def chart_has_rows(cur, chart_id):
 
 def seed_hit_stand_chart(cur, chart_id):
     """
-    This seeds a standard-ish hit/stand chart (no doubles).
+    This seeds a standard-ish hit/stand chart
     HARD:
       17+ stand
       13-16 stand vs 2-6 else hit
