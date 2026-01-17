@@ -15,9 +15,14 @@ suits = ["♠","♥","♦","♣"]
 
 def make_deck():
     deck = []
-    for s in suits:
-        for r in ranks:
-            deck.append(r + s)
+
+    for _ in range (6):
+        for suit in suits:
+            for rank in ranks:
+                deck.append(rank + suit)
+    
+    
+
     random.shuffle(deck)
     return deck
 
@@ -27,15 +32,16 @@ def card_rank(card):
 def hand_value(hand):
     total = 0
     aces = 0
+
     for card in hand:
-        r = card_rank(card)
-        if r in ["J","Q","K"]:
+        rank = card_rank(card)
+        if rank in ["J","Q","K"]:
             total += 10
-        elif r == "A":
+        elif rank == "A":
             total += 11
             aces += 1
         else:
-            total += int(r)
+            total += int(rank)
 
     while total > 21 and aces > 0:
         total -= 10
@@ -44,51 +50,59 @@ def hand_value(hand):
     return total
 
 def is_soft(hand):
-    # soft = has an Ace counted as 11 in the final value
     total = 0
     aces = 0
+
     for card in hand:
-        r = card_rank(card)
-        if r == "A":
+        rank = card_rank(card)
+        if rank == "A":
             total += 11
             aces += 1
-        elif r in ["J","Q","K"]:
+        elif rank in ["J","Q","K"]:
             total += 10
         else:
-            total += int(r)
+            total += int(rank)
 
-    # if we had to downgrade an ace, then it becomes less "soft"
     while total > 21 and aces > 0:
         total -= 10
         aces -= 1
 
-    # if there is at least one Ace AND we didn't downgrade all of them, it’s soft
-    # easiest way: compare with "all aces as 1"
+    # compare the total value and the value if all aces as 1
+    # to see wether the hand is soft
     all_aces_as_1 = 0
     for card in hand:
-        r = card_rank(card)
-        if r == "A":
+        rank = card_rank(card)
+        if rank == "A":
             all_aces_as_1 += 1
-        elif r in ["J","Q","K"]:
+        elif rank in ["J","Q","K"]:
             all_aces_as_1 += 10
         else:
-            all_aces_as_1 += int(r)
+            all_aces_as_1 += int(rank)
 
-    return ("A" in [card_rank(c) for c in hand]) and (total == all_aces_as_1 + 10)
 
-def show_hand(name, hand, hide_first=False):
-    if hide_first:
+    has_ace = False
+    for card in hand:
+        if card_rank(card) == "A":
+            has_ace = True
+            
+    return has_ace and (total == all_aces_as_1 + 10)
+
+
+def show_hand(name, hand, hide_second_card=False):
+    if hide_second_card:
         print(name + ": " + hand[0] + " ??")
     else:
         print(name + ": " + " ".join(hand) + "  (total: " + str(hand_value(hand)) + ")")
 
+
+#for mysql table, j,q,k are viewed as 10
 def dealer_upcard_str(card):
-    r = card_rank(card)
-    if r == "A":
+    rank = card_rank(card)
+    if rank == "A":
         return "A"
-    if r in ["J","Q","K"]:
+    if rank in ["J","Q","K"]:
         return "10"
-    return r  # "2".."10"
+    return rank
 
 # -------------------- DB STUFF --------------------
 
@@ -206,8 +220,8 @@ def get_accuracy(cur, session_id):
 # -------------------- GAME --------------------
 
 def main():
-    print("=== Terminal Blackjack ===")
-    print("No betting. Play forever until you quit.\n")
+    print("=== Evan's Blackjack Trainer ===")
+    print("Play until you quit.\n")
 
     # connect DB
     try:
@@ -231,48 +245,57 @@ def main():
         chart_id = None
         session_id = None
 
+
+    #start game
     deck = make_deck()
 
     while True:
-        if len(deck) < 15:
+        if len(deck) < 67:
             deck = make_deck()
 
-        player = []
-        dealer = []
-        player.append(deck.pop())
-        dealer.append(deck.pop())
-        player.append(deck.pop())
-        dealer.append(deck.pop())
+        player_hand = []
+        dealer_hand = []
+        player_hand.append(deck.pop())
+        dealer_hand.append(deck.pop())
+        player_hand.append(deck.pop())
+        dealer_hand.append(deck.pop())
 
-        print("\n----------------------------")
-        show_hand("Dealer", dealer, hide_first=True)
-        show_hand("Player", player)
+        print("\n-------------------")
+        show_hand("Dealer", dealer_hand, hide_second_card = True)
+        show_hand("Player", player_hand)
 
-        # check blackjack
-        player_bj = (hand_value(player) == 21 and len(player) == 2)
-        dealer_bj = (hand_value(dealer) == 21 and len(dealer) == 2)
+        #check if either player or dealer has blackjack
+        player_bj = (hand_value(player_hand) == 21 and len(player_hand) == 2)
+        dealer_bj = (hand_value(dealer_hand) == 21 and len(dealer_hand) == 2)
 
         if player_bj or dealer_bj:
-            print("\nDealer reveals:")
-            show_hand("Dealer", dealer, hide_first=False)
+            print("\nDealer :")
+            show_hand("Dealer", dealer_hand, hide_second_card = False)
 
             if player_bj and dealer_bj:
-                print("Push. (Both blackjack)")
+                print("Push")
             elif player_bj:
-                print("Blackjack! You win.")
+                print("You win with a Blackjack! :)")
             else:
-                print("Dealer has blackjack. You lose.")
+                print("You lose, dealer has a Blackjack :(")
         else:
-            # player turn
+            #player decisions
             while True:
-                if hand_value(player) > 21:
-                    print("\nYou busted!")
+                if hand_value(player_hand) > 21:
+                    print("\nYou lose, you busted :(")
                     break
 
-                # figure out the state BEFORE the player's decision
-                kind = "SOFT" if is_soft(player) else "HARD"
-                total = hand_value(player)
-                up = dealer_upcard_str(dealer[0])
+                # determine if the hand is soft before the player makes a decision
+                # for the database
+                
+                if is_soft(player_hand):
+                    kind = "SOFT" 
+                else:
+                    kind = "HARD"
+
+                total = hand_value(player_hand)
+                up_card = dealer_upcard_str(dealer_hand[0])
+
 
                 move = input("Hit or Stand? (h/s): ").lower().strip()
                 if move == "h":
@@ -285,49 +308,49 @@ def main():
 
                 # compare to chart + log to DB
                 if db_ok:
-                    correct = get_correct_action(cur, chart_id, kind, total, up)
-                    log_decision(cur, session_id, kind, total, up, player_action, correct)
+                    correct = get_correct_action(cur, chart_id, kind, total, up_card)
+                    log_decision(cur, session_id, kind, total, up_card, player_action, correct)
                     conn.commit()
 
                 # actually do the action
                 if player_action == "H":
-                    player.append(deck.pop())
+                    player_hand.append(deck.pop())
                     print()
-                    show_hand("Dealer", dealer, hide_first=True)
-                    show_hand("Player", player)
+                    show_hand("Dealer", dealer_hand, hide_first=True)
+                    show_hand("Player", player_hand)
                 else:
                     break
 
             # dealer plays if player didn't bust
-            if hand_value(player) <= 21:
-                print("\nDealer reveals:")
-                show_hand("Dealer", dealer, hide_first=False)
+            if hand_value(player_hand) <= 21:
+                print("\nDealer shows:")
+                show_hand("Dealer", dealer_hand, hide_first=False)
 
-                while hand_value(dealer) < 17:
-                    print("Dealer hits...")
-                    dealer.append(deck.pop())
-                    show_hand("Dealer", dealer, hide_first=False)
+                while hand_value(dealer_hand) < 17:
+                    print("Dealer hits: ")
+                    dealer_hand.append(deck.pop())
+                    show_hand("Dealer", dealer_hand, hide_first=False)
 
-                p = hand_value(player)
-                d = hand_value(dealer)
+                p = hand_value(player_hand)
+                d = hand_value(dealer_hand)
 
                 if d > 21:
-                    print("Dealer busted! You win.")
+                    print("You win, dealer busted :)")
                 elif p > d:
-                    print("You win.")
+                    print("You win :)")
                 elif p < d:
-                    print("You lose.")
+                    print("You lose :)")
                 else:
-                    print("Push. (tie)")
+                    print("Push")
 
-        # show accuracy so far
+        # show current accuracy
         if db_ok:
             total, correct = get_accuracy(cur, session_id)
             acc = 0 if total == 0 else round((correct / total) * 100, 1)
             print("\nAccuracy so far:", f"{correct}/{total}", f"= {acc}%")
 
-        again = input("Next round? (enter = yes, q = quit): ").lower().strip()
-        if again == "q":
+        again = input("Play another round? (enter = y/n): ").lower().strip()
+        if again == "no" or again == "n":
             break
 
     # end session + final accuracy
@@ -340,7 +363,7 @@ def main():
         cur.close()
         conn.close()
 
-    print("\nThanks for playing!")
+    print("\nThanks for playing :)")
 
 if __name__ == "__main__":
     main()
