@@ -220,8 +220,7 @@ def get_accuracy(cur, session_id):
 # -------------------- GAME --------------------
 
 def main():
-    print("=== Evan's Blackjack Trainer ===")
-    print("Play until you quit.\n")
+    print("Evan's Blackjack Trainer")
 
     # connect DB
     try:
@@ -260,7 +259,7 @@ def main():
         player_hand.append(deck.pop())
         dealer_hand.append(deck.pop())
 
-        print("\n-------------------")
+        print("------------------------\n")
         show_hand("Dealer", dealer_hand, hide_second_card = True)
         show_hand("Player", player_hand)
 
@@ -316,7 +315,7 @@ def main():
                 if player_action == "H":
                     player_hand.append(deck.pop())
                     print()
-                    show_hand("Dealer", dealer_hand, hide_first=True)
+                    show_hand("Dealer", dealer_hand, hide_second_card=True)
                     show_hand("Player", player_hand)
                 else:
                     break
@@ -324,12 +323,12 @@ def main():
             # dealer plays if player didn't bust
             if hand_value(player_hand) <= 21:
                 print("\nDealer shows:")
-                show_hand("Dealer", dealer_hand, hide_first=False)
+                show_hand("Dealer", dealer_hand, hide_second_card=False)
 
                 while hand_value(dealer_hand) < 17:
                     print("Dealer hits: ")
                     dealer_hand.append(deck.pop())
-                    show_hand("Dealer", dealer_hand, hide_first=False)
+                    show_hand("Dealer", dealer_hand, hide_second_card=False)
 
                 p = hand_value(player_hand)
                 d = hand_value(dealer_hand)
@@ -363,7 +362,7 @@ def main():
         cur.close()
         conn.close()
 
-    print("\nThanks for playing :)")
+    print("Thanks for playing :)")
 
 if __name__ == "__main__":
     main()
