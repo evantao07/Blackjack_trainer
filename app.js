@@ -42,7 +42,6 @@ function applyState(data) {
   $("dealerUpcard").textContent = data.dealerUpcard ?? "—";
   $("dealerTotal").textContent = data.dealerTotal ?? "—";
   $("playerTotal").textContent = data.playerTotal ?? "—";
-  $("handType").textContent = data.handKind ?? "—";
 
   setAcc(data.sessionAccuracy, data.allTimeAccuracy);
 
