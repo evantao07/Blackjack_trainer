@@ -218,6 +218,21 @@ def get_accuracy(cur, session_id):
     correct = correct or 0
     return total, correct
 
+def get_all_time_accuracy(cur, chart_id=None):
+    if chart_id is None:
+        cur.execute("SELECT COUNT(*), SUM(is_correct) FROM bj_decision_log")
+    else:
+        cur.execute("""
+            SELECT COUNT(*), SUM(l.is_correct)
+            FROM bj_decision_log l
+            JOIN bj_session s ON s.session_id = l.session_id
+            WHERE s.chart_id = %s
+        """, (chart_id,))
+    total, correct = cur.fetchone()
+    correct = correct or 0
+    return total, correct
+
+
 # -------------------- GAME --------------------
 
 def main():
@@ -343,25 +358,22 @@ def main():
                 else:
                     print("Push")
 
-        # show current accuracy
-        if db_ok:
-            total, correct = get_accuracy(cur, session_id)
-            acc = 0 if total == 0 else round((correct / total) * 100, 1)
-            print("\nAccuracy so far:", f"{correct}/{total}", f"= {acc}%")
 
         again = input("Play another round? (enter = y/n): ").lower().strip()
         if again == "no" or again == "n":
             break
 
+
     # end session + final accuracy
     if db_ok:
-        end_session(cur, session_id)
-        conn.commit()
-        total, correct = get_accuracy(cur, session_id)
-        acc = 0 if total == 0 else round((correct / total) * 100, 1)
-        print("\nFINAL accuracy:", f"{correct}/{total}", f"= {acc}%")
-        cur.close()
-        conn.close()
+        s_total, s_correct = get_accuracy(cur, session_id)
+        s_acc = 0 if s_total == 0 else round((s_correct / s_total) * 100, 1)
+
+        a_total, a_correct = get_all_time_accuracy(cur, chart_id)  # or None for global
+        a_acc = 0 if a_total == 0 else round((a_correct / a_total) * 100, 1)
+
+        print("\nSession accuracy:", f"{s_correct}/{s_total}", f"= {s_acc}%")
+        print("All-time accuracy:", f"{a_correct}/{a_total}", f"= {a_acc}%")
 
     print("Thanks for playing :)")
 
