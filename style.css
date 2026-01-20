@@ -119,11 +119,13 @@ h1{
   border: 1px solid rgba(255,255,255,0.08);
 }
 .area-head{
-  display:flex;
-  gap: 10px;
-  align-items:center;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: flex;
+  flex-direction: column;   /* stack title + total */
+  align-items: center;      /* center horizontally */
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
 }
 .area-head h2{
   margin: 0;

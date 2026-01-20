@@ -39,19 +39,23 @@ function applyState(data) {
   renderCards("dealerCards", data.dealer, data.hideDealerSecond);
   renderCards("playerCards", data.player, false);
 
-  $("dealerUpcard").textContent = data.dealerUpcard ?? "—";
-  $("dealerTotal").textContent = data.dealerTotal ?? "—";
+  // Player total always shows normally
   $("playerTotal").textContent = data.playerTotal ?? "—";
+
+  // Dealer "Total" shows upcard during player turn, then true total when revealed
+  $("dealerTotal").textContent = data.hideDealerSecond
+    ? (data.dealerUpcard ?? "—")   // show upcard like "A" or "10"
+    : (data.dealerTotal ?? "—");  // show actual dealer total number
 
   setAcc(data.sessionAccuracy, data.allTimeAccuracy);
 
-  // Hit/Stand enabled only while round is active
   $("btnHit").disabled = data.roundOver;
   $("btnStand").disabled = data.roundOver;
 
   // Show New Round only when round is over
   $("btnNew").classList.toggle("hidden", !data.roundOver);
 }
+
 
 
 async function apiGet(path) {
