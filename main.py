@@ -3,10 +3,11 @@
 # uses MySQL hit/stand chart + tracks accuracy
 
 import random
+import os
 
 DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASS = "Huk87$Km7@!89"
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
 DB_NAME = "blackjack"
 CHART_NAME = "Hit/Stand"
 
@@ -338,7 +339,7 @@ def main():
                 elif p > d:
                     print("You win :)")
                 elif p < d:
-                    print("You lose :)")
+                    print("You lose :(")
                 else:
                     print("Push")
 
