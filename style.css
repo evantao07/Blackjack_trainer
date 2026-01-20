@@ -86,13 +86,8 @@ h1{
   margin-top: 3px;
 }
 
-.layout{
-  display:grid;
-  grid-template-columns: 1.3fr 0.7fr;
-  gap: 16px;
-  padding: 18px 18px 0 18px;
-  max-width: 1200px;
-  margin: 0 auto;
+.layout.single{
+  grid-template-columns: 1fr;
 }
 
 .table{
