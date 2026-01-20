@@ -61,11 +61,21 @@ def api_start():
     session.permanent = True
     conn, cur, chart_id = ensure_db_ready()
 
-    if "db_session_id" not in session:
-        db_session_id = blackjack.start_session(cur, chart_id)
-        conn.commit()
-        session["db_session_id"] = db_session_id
-        session["chart_id"] = chart_id
+    # ALWAYS start a fresh DB session whenever the page loads
+# (so session accuracy resets on reload/new page)
+    if "db_session_id" in session:
+        # optional: close the previous session cleanly
+        try:
+            blackjack.end_session(cur, session["db_session_id"])
+            conn.commit()
+        except:
+            pass
+
+db_session_id = blackjack.start_session(cur, chart_id)
+conn.commit()
+session["db_session_id"] = db_session_id
+session["chart_id"] = chart_id
+
 
     # start a new round
     deck = session.get("deck", blackjack.make_deck())
