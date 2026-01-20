@@ -62,20 +62,18 @@ def api_start():
     conn, cur, chart_id = ensure_db_ready()
 
     # ALWAYS start a fresh DB session whenever the page loads
-# (so session accuracy resets on reload/new page)
+    # (so session accuracy resets on reload/new page)
     if "db_session_id" in session:
-        # optional: close the previous session cleanly
         try:
             blackjack.end_session(cur, session["db_session_id"])
             conn.commit()
         except:
             pass
 
-db_session_id = blackjack.start_session(cur, chart_id)
-conn.commit()
-session["db_session_id"] = db_session_id
-session["chart_id"] = chart_id
-
+    db_session_id = blackjack.start_session(cur, chart_id)
+    conn.commit()
+    session["db_session_id"] = db_session_id
+    session["chart_id"] = chart_id
 
     # start a new round
     deck = session.get("deck", blackjack.make_deck())
@@ -91,8 +89,10 @@ session["chart_id"] = chart_id
     session["round_over"] = False
 
     data = round_state(conn, cur, chart_id, session["db_session_id"])
-    cur.close(); conn.close()
+    cur.close()
+    conn.close()
     return jsonify(data)
+
 
 @app.post("/api/new-round")
 def api_new_round():
