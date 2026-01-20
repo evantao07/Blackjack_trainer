@@ -45,9 +45,14 @@ function applyState(data) {
 
   setAcc(data.sessionAccuracy, data.allTimeAccuracy);
 
+  // Hit/Stand enabled only while round is active
   $("btnHit").disabled = data.roundOver;
   $("btnStand").disabled = data.roundOver;
+
+  // Show New Round only when round is over
+  $("btnNew").classList.toggle("hidden", !data.roundOver);
 }
+
 
 async function apiGet(path) {
   const res = await fetch(path);
