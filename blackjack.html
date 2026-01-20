@@ -1,0 +1,102 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blackjack Trainer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="chip">♠</span>
+      <div>
+        <h1>Blackjack Trainer</h1>
+        <p class="subtitle">Hit/Stand practice + accuracy tracking</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Session Accuracy</div>
+        <div class="value" id="sessionAcc">—</div>
+      </div>
+      <div class="stat">
+        <div class="label">All-Time Accuracy</div>
+        <div class="value" id="allTimeAcc">—</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="table">
+      <div class="area">
+        <div class="area-head">
+          <h2>Dealer</h2>
+          <div class="pill">Upcard: <span id="dealerUpcard">—</span></div>
+          <div class="pill">Total: <span id="dealerTotal">—</span></div>
+        </div>
+        <div class="cards" id="dealerCards">
+          <!-- cards injected here -->
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="area">
+        <div class="area-head">
+          <h2>You</h2>
+          <div class="pill">Hand Type: <span id="handType">—</span></div>
+          <div class="pill">Total: <span id="playerTotal">—</span></div>
+        </div>
+        <div class="cards" id="playerCards">
+          <!-- cards injected here -->
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="msg-title" id="messageTitle">Welcome</div>
+        <div class="msg-body" id="messageBody">Press “New Round” to start.</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn primary" id="btnNew">New Round</button>
+        <button class="btn" id="btnHit" disabled>Hit</button>
+        <button class="btn" id="btnStand" disabled>Stand</button>
+        <button class="btn ghost" id="btnReveal" disabled>Reveal Dealer</button>
+        <button class="btn danger" id="btnQuit">Quit</button>
+      </div>
+
+      <div class="smallprint">
+        <span class="dot"></span>
+        <span>Tip: Accuracy compares your choice to the MySQL hit/stand chart.</span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h3>Round Log</h3>
+      <ul class="log" id="log">
+        <li class="log-item muted">No actions yet.</li>
+      </ul>
+
+      <div class="panel-footer">
+        <div class="mini">
+          <div class="mini-label">Last Decision</div>
+          <div class="mini-value" id="lastDecision">—</div>
+        </div>
+        <div class="mini">
+          <div class="mini-label">Correct Move</div>
+          <div class="mini-value" id="correctMove">—</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Frontend only. Hook this up to your Python/MySQL backend with fetch() when ready.</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
