@@ -20,7 +20,12 @@ body{
               radial-gradient(1200px 800px at 80% 30%, rgba(120,255,210,0.10), transparent 65%),
               var(--bg);
   color: var(--text);
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .topbar{
   display:flex;
@@ -87,16 +92,25 @@ h1{
 }
 
 .layout.single{
-  grid-template-columns: 1fr;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 18px;
 }
 
+
+
 .table{
+  width: min(900px, 92vw);
+  margin: 0 auto;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 18px;
   box-shadow: var(--shadow);
 }
+
 
 .area{
   padding: 10px;
