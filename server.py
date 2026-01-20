@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request, session, send_from_directory
 from datetime import timedelta
 
-import blackjack  # imports your blackjack.py
+import main as blackjack
 
 app = Flask(__name__, static_folder=".")
 app.secret_key = "change-this-to-any-random-string"
