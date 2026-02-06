@@ -1,0 +1,14 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# mac/windows noise
+.DS_Store
+Thumbs.db
