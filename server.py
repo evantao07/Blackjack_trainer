@@ -1,11 +1,15 @@
 # server.py
+
 from flask import Flask, jsonify, request, session, send_from_directory
 from datetime import timedelta
 
 import main as blackjack
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__, static_folder=".")
-app.secret_key = "change-this-to-any-random-string"
+app.secret_key = os.getenv("SECRET_KEY")
 app.permanent_session_lifetime = timedelta(hours=6)
 
 def ensure_db_ready():
