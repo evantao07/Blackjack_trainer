@@ -1,6 +1,4 @@
-# blackjack.py
-# terminal blackjack (grade 12 style)
-# uses MySQL hit/stand chart + tracks accuracy
+#My blackjack training app!
 
 import random
 import os
@@ -28,7 +26,7 @@ def make_deck():
     return deck
 
 def card_rank(card):
-    return card[:-1]  # last char is suit
+    return card[:-1] # the last char is the suit
 
 def hand_value(hand):
     total = 0
@@ -105,7 +103,7 @@ def dealer_upcard_str(card):
         return "10"
     return rank
 
-# -------------------- DB STUFF --------------------
+
 
 def db_connect():
     import mysql.connector
@@ -163,7 +161,6 @@ def seed_hit_stand_chart(cur, chart_id):
                 action = "H"
             rows.append((chart_id, "HARD", total, up, action))
 
-    # SOFT totals 13..21  (A,2=13 ... A,10=21)
     for total in range(13, 22):
         for up in dealer_cards:
             action = "H"
@@ -197,7 +194,6 @@ def get_correct_action(cur, chart_id, hand_kind, player_total, dealer_upcard):
     row = cur.fetchone()
     if row:
         return row[0]
-    # fallback if something missing
     return "H"
 
 def log_decision(cur, session_id, hand_kind, player_total, dealer_upcard, player_action, correct_action):
@@ -233,7 +229,7 @@ def get_all_time_accuracy(cur, chart_id=None):
     return total, correct
 
 
-# -------------------- GAME --------------------
+
 
 def main():
     print("Evan's Blackjack Trainer")
